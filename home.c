@@ -1,668 +1,657 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <time.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <windows.h>
 #include <string.h>
+#include <stdlib.h>
+#include <conio.h>
 #include <malloc.h>
-#include <locale.h>
-#include <ctime>
-typedef struct books book1;
-struct books {
-    char num[20];
-    char ath[60];
-    char name[60];
-    int q;
-    int qs;
-};
-book1 books[1000];
-typedef struct students students1;
-struct students {
-    char booknum[20];
-    char surname[30];
-    char name[30];
-    char patr[40];
-    char fac[5];
-    char depart[40];
-};
-students1 students[1000];
-struct stbooks {
-    char time[20];
-};
-stbooks stdbooks[100];
-void bookf(FILE* book);
-int readb(const char* file);
-int readb1(const char* file);
-int similar(char num[20]);
-void delbook(const char* file);
-int similar1(char num[20]);
-int similar2(char booknum[15]);
-void delstudents(const char* file);
-void studentsf(FILE* stdents);
-int similarst(char surname[40])
+#include <time.h>
+#include <windows.h>
+#define _CRT_SECURE_NO_WARNINGS
+#define D_CRT_NONSTDC_NO_WARNINGS
+#define size 50
+#define MAX 100
+#pragma warning(disable : 4996) 
+
+struct student
 {
-    int i;
-    int temp = -1;
-    for (i = 0; i < readb1("students.csv"); i++)
-        if (strcmp(surname, students[i].surname) == 0)
-            temp = i;
-    return temp;
-}
-void searchst(const char* filename) {
-    setlocale(LC_ALL, "Russian");
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
-    FILE* stdents;
-    char surname[40];
-    char file[5000];
-    printf("Enter students surname:");
-    scanf("%s", surname);
-    stdents = fopen(filename, "r+");
-    rewind(stdents);
-    int getfile = similarst(surname);
-    if (getfile == 0)
-    {
-    printf("%s;%s;%s;%s;%s;%s\n", students[getfile].booknum, students[getfile].surname, students[getfile].name, students[getfile].patr, students[getfile].fac, students[getfile].depart);
-    fclose(stdents);
-    }
-    else
-    {
-    printf("There is no this student!");
-    fclose(stdents);
-    }
-}
-void back(FILE* backup) {
-    char file[5000];
-    time_t time;
-    struct tm* time_t;
-    //strftime(file, 5000, );
-}
-char state;
-char status;
-char c[2];
-int m;
-int count = 0;
-int Mainstudents();
-int Mainbook();
-char* writestr(char str[]);
-char* writestr(char str[]) {
-    int c, i = 0;
-    while ((c = getchar()) != EOF && c != '\n') {
-        str[i++] = c;
-    }str[i] = '\0';
-    return str;
-}
+    char gradebook[8];
+    char name[15];
+    char lastname[15];
+    char f_name[20];
+    char facult[5];
+    char departr[MAX];
+};
 
-int Mainbook() {
-    printf("Books menu:\n");
-    printf("(1) Add new book\n");
-    printf("(2) Remove book\n");
-    printf("(3) Change books information\n");
-    printf("(4) Information about student by ISBN\n");
-    printf("(5) Issue/pass books\n");
-    printf("(0) Exit\n");
-    FILE* book;
-    book = fopen("books.csv", "r");
-    bookf(book);
-    fclose(book);
-    return 1;
-}
+struct student student[MAX];
 
-int Mainstudents() {
-    printf("\nStudents menu:\n");
-    printf("(1) Add new student\n");
-    printf("(2) Remove student\n");
-    printf("(3) Change students information\n");
-    printf("(4) Serach student\n");
-    printf("(5) Выдача книг/сдача\n");
-    printf("(0) Exit\n");
-    FILE* stdents;
-    stdents = fopen("students.csv", "r");
-    studentsf(stdents);
-    fclose(stdents);
-    return 2;
-
-}
-int readb(const char* file) {
-    FILE* book = fopen(file, "r+");
-    if (!book)
-        return -1;
-    rewind(book);
-    char str[1000];
-    int i = 0;
-    while (fgets(str, 1000, book))
-    {
-        fscanf(book, "%[^;];%[^;];%[^;];%d;%d", books[i].num, books[i].ath, books[i].name, &books[i].q, &books[i].qs);
-        i++;
-    }
-    return i;
-}
-int readb1(const char* file) {
-    FILE* stdents = fopen(file, "r+");
-    if (!stdents)
-        return -1;
-    rewind(stdents);
-    char str[1000];
-    int i = 0;
-    while (fgets(str, 1000, stdents)) {
-        fscanf(stdents, "%[^;];%[^;];%[^;];%[^;];%[^;];%[^;]", students[i].booknum, students[i].surname, students[i].name, students[i].patr, students[i].fac, students[i].depart);
-        i++;
-    }
-    return i;
-}
-int similar(char num[20])
+struct books
 {
-    int i;
-    int temp = -1;
-    for (i = 0; i < readb("books.csv"); i++)
-        if (strcmp(num, books[i].num) == 0)
-            temp = i;
-    return temp;
-}
-int similar2(char booknum[15])
+    unsigned long long int ISBN;
+    char Author[size];
+    char title[size];
+    int total;
+    int available;
+};
+
+struct books books[MAX];
+
+struct user
 {
-    int i;
-    int temp = -1;
-    for (i = 0; i < readb1("students.csv"); i++)
-        if (strcmp(booknum, students[i].booknum) == 0)
-            temp = i;
-    return temp;
-}
-void bookf(FILE* book) {
-    setlocale(LC_ALL, "Russian");
-    SetConsoleCP(1251);
-
-    SetConsoleOutputCP(1251);
-    FILE* studbooks;
-    struct books elem;
-    book = fopen("books.csv", "r");
-    char file[5000];
-    while (fgets(file, 5000, book) != NULL) {
-        printf("%s", file);
-    }
-    fclose(book);
-    int add;
-    printf("You choosed:");
-    scanf("%d", &add);
-    if (add == 1) {
-        book = fopen("books.csv", "a+");
-        printf("Enter ISBN:");
-        fflush(stdin);
-        scanf("%s", elem.num);
-        if (similar(elem.num) != -1)
-        {
-            printf("This ISBN already exists!\n");
-            fclose(book);
-        }
-        else {
-            printf("Enter author:");
-            scanf("%s", elem.ath);
-            printf("Enter title:");
-            scanf("%s", elem.name);
-            printf("Enter number:");
-            scanf("%d", &elem.q);
-            printf("Enter the number of available books:");
-            scanf("%d", &elem.qs);
-            book = fopen("books.csv", "a+");
-            studbooks = fopen("student_books.csv", "a+");
-            if (elem.qs != elem.q) {
-                fprintf(book, "%s;%s;%s;%d;%d\n", elem.num, elem.ath, elem.name, elem.q, elem.qs);
-                fprintf(studbooks, "%s\n", elem.num);
-            }
-            else fprintf(book, "%s;%s;%s;%d;%d\n", elem.num, elem.ath, elem.name, elem.q, elem.qs);
-            fclose(book);
-            fclose(studbooks);
-        }
-    }
-    if (add == 2) {
-        FILE* stubooks;
-        stubooks = fopen("student_books.csv", "r");
-        char str[5000];
-        while (fgets(str, 5000, stubooks) != NULL)
-            printf("%s", str);
-        printf("Enter ISBN:");
-        scanf("%s", elem.num);
-        int l = similar1(elem.num);
-        if (l != 1) {
-            printf("It can't be removed!\n");
-        }
-        else
-            printf("ISBN is correct!");
-            delbook("books.csv");
-    }
-    if (add == 3) {
-        printf("\nEnter ISBN:");
-        scanf("%s", elem.num);
-        book = fopen("books.csv", "r");
-        rewind(book);
-        int getfile = similar(elem.num);
-        int getfile1 = readb("books.csv");
-        fclose(book);
-        if (getfile != -1)
-        {
-            printf("Enter author:");
-            scanf("%s", elem.ath);
-            printf("Enter title:");
-            scanf("%s", elem.name);
-            printf("Number:");
-            scanf("%d", &elem.q);
-            printf("Number of available books:");
-            scanf("%d", &elem.qs);
-            book = fopen("books.csv", "w");
-            int i;
-            for (i = 0; i < getfile1; i++)
-            {
-                if (i != getfile)
-                    fprintf(book, "%s;%s;%s;%d;%d\n", books[i].num, books[i].ath, books[i].name, books[i].q, books[i].qs);
-                fprintf(book, "%s;%s;%s;%d;%d\n", elem.num, elem.ath, elem.name, elem.q, elem.qs);
-            }
-            fclose(book);
-        }
-        else
-            printf("\nThere is no this ISBN!\n ");
-    }
-    if (add == 4) {
-
-    }
-    if (add == 5) {
-        struct students elem1;
-        struct stbooks elem2;
-        FILE* book, * studbook, * stdents;
-        printf("\nEnter ISBN:");
-        scanf("%s", elem.num);
-        printf("Enter number of greatbook:");
-        scanf("%s", elem1.booknum);
-        book = fopen("books.csv", "r");
-        stdents = fopen("students.csv", "r");
-        rewind(book);
-        rewind(stdents);
-        int getfile = similar(elem.num);
-        int getfile2 = similar2(elem1.booknum);
-        int getfile1 = readb("books.csv");
-        int getfile12 = readb1("students.csv");
-        fclose(book);
-        fclose(stdents);
-        if (getfile != 1 && getfile2 != 1)
-        {
-            printf("Enter author:");
-            scanf("%s", elem.ath);
-            printf("Enter title:");
-            scanf("%s", elem.name);
-            printf("Number:");
-            scanf("%d", &elem.q);
-            printf("Number of available books:");
-            scanf("%d", &elem.qs);
-            printf("Enter date of pass:");
-            scanf("%s", elem2.time);
-            book = fopen("books.csv", "w");
-            stdents = fopen("students.csv", "r");
-            studbook = fopen("student_books.csv", "a+");
-            int i, j;
-            for (i = 0; i < getfile1; i++)
-            {
-                for (j = 0; j < getfile12; j++)
-                    if (i != getfile && j != getfile2)
-                        fprintf(book, "%s;%s;%s;%d;%d\n", books[i].num, books[i].ath, books[i].name, books[i].q, books[i].qs);
-                fprintf(studbook, "%s;%s;%s\n", books[i].num, students[j].booknum, elem2.time);
-            }
-            int n;
-            printf("1-reduce; 2-increase");
-            scanf("%d", &n);
-            if (n == 2) {
-                if (elem.qs < elem.q) {
-                    fprintf(book, "%s;%s;%s;%d;%d\n", elem.num, elem.ath, elem.name, elem.q, elem.qs + 1);
-                    fprintf(studbook, "%s;%s;%s\n", elem.num, elem1.booknum, elem2.time);
-                }
-                else printf("There is no free!");
-            }
-            else if (n == 1) {
-                if (elem.qs > 1) {
-                    fprintf(book, "%s;%s;%s;%d;%d\n", elem.num, elem.ath, elem.name, elem.q, elem.qs - 1);
-                    fprintf(studbook, "%s;%s;%s\n", elem.num, elem1.booknum, elem2.time);
-                }
-                else {
-                    printf("There is no books\n");
-                    printf("Book will be passed at: %s", elem2.time);
-                }
-                fclose(book);
-            }
-            else
-                    printf("\nThere is no this ISBN or number of greatbook!\n ");
-        }
-    }
-    if (add == 0) {
-        exit(0);
-    }
-}
-void studentsf(FILE* stdents) {
-    setlocale(LC_ALL, "Russian");
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
-    struct students elem;
-    FILE* stubooks;
-    char file[5000];
-    stdents = fopen("students.csv", "r");
-    while ((fgets(file, 5000, stdents)) != NULL) {
-        printf("\n%s", file);
-    }
-    fclose(stdents);
-    printf("\nYou choosed:");
-    int add;
-    scanf("%d", &add);
-    if (add == 1) {
-        printf("\nEnter number of greatbook:");
-        scanf("%s", elem.booknum);
-        if (similar2(elem.booknum) != -1)
-        {
-            printf("This number of greatbook isn't available!\n");
-            fclose(stdents);
-        }
-        else {
-            printf("Enter surname:");
-            scanf("%s", elem.surname);
-            printf("Enter name:");
-            scanf("%s", elem.name);
-            printf("Enter middlename:");
-            scanf("%s", elem.patr);
-            printf("Enter faculty:");
-            scanf("%s", elem.fac);
-            printf("Enter department:");
-            scanf("%s", elem.depart);
-            stdents = fopen("students.csv", "a+");
-            fprintf(stdents, "%s;%s;%s;%s;%s;%s\n", elem.booknum, elem.surname, elem.name, elem.patr, elem.fac, elem.depart);
-        }
-    }
-    if (add == 2) {
-        stubooks = fopen("student_books.csv", "r");
-        char str[5000];
-        while (fgets(str, 5000, stubooks) != NULL)
-            printf("%s", str);
-        printf("Enter number of greatbook:");
-        scanf("%s", elem.booknum);
-        int l = similar1(elem.booknum);
-        if (l != -1) {
-            printf("This student can't be removed because he has a books!\n");
-        }
-        else
-            delstudents("students.csv");
-    }
-    if (add == 3) {
-        printf("\nEnter number of greatbook:");
-        scanf("%s", elem.booknum);
-        stdents = fopen("students.csv", "r");
-        rewind(stdents);
-        int getfile = similar2(elem.booknum);
-        int getfile1 = readb1("students.csv");
-        fclose(stdents);
-        if (getfile != -1)
-        {
-            printf("Enter surname:");
-            scanf("%s", elem.surname);
-            printf("Enter name:");
-            scanf("%s", elem.name);
-            printf("Enter middlename:");
-            scanf("%s", &elem.patr);
-            printf("Enter faculty:");
-            scanf("%s", &elem.fac);
-            printf("Enter department:");
-            scanf("%s", elem.depart);
-            stdents = fopen("students.csv", "w");
-            int i;
-            for (i = 0; i < getfile1; i++)
-            {
-                if (i != getfile)
-                    fprintf(stdents, "%s;%s;%s;%s;%s;%s\n", students[i].booknum, students[i].surname, students[i].name, students[i].patr, students[i].fac, students[i].depart);
-                fprintf(stdents, "%s;%s;%s;%s;%s;%s\n", elem.booknum, elem.surname, elem.name, elem.patr, elem.fac, elem.depart);
-            }
-            fclose(stdents);
-        }
-        else
-            printf("\nThere is no this greatbook!\n ");
-    }
-    if (add == 4) {
-        searchst("students.csv");
-    }
-    if (add == 5) {
-        struct books elem1;
-        struct stbooks elem2;
-        FILE* book, * studbook;
-        printf("\nEnter ISBN:");
-        scanf("%s", elem1.num);
-        printf("Enter number ofgreatbook:");
-        scanf("%s", elem.booknum);
-        book = fopen("books.csv", "r");
-        stdents = fopen("students.csv", "r");
-        rewind(book);
-        rewind(stdents);
-        int getfile = similar(elem1.num);
-        int getfile2 = similar2(elem.booknum);
-        int getfile1 = readb("books.csv");
-        int getfile12 = readb1("students.csv");
-        fclose(book);
-        fclose(stdents);
-        if (getfile == 0 && getfile2 == 0)
-        {
-            printf("Enter authorа:");
-            scanf("%s", elem1.ath);
-            printf("Enter title:");
-            scanf("%s", elem1.name);
-            printf("Number:");
-            scanf("%d", &elem1.q);
-            printf("Number of available booksг:");
-            scanf("%d", &elem1.qs);
-            printf("Date of pass:");
-            scanf("%s", elem2.time);
-            book = fopen("books.csv", "w");
-            stdents = fopen("students.csv", "r");
-            studbook = fopen("student_books.csv", "a+");
-            int i, j;
-            for (i = 0; i <
-
-                getfile1; i++)
-            {
-                for (j = 0; j < getfile12; j++)
-                    if (i != getfile && j != getfile2)
-                        fprintf(book, "%s;%s;%s;%d;%d\n", books[i].num, books[i].ath, books[i].name, books[i].q, books[i].qs);
-                fprintf(studbook, "%s;%s;%s\n", books[i].num, students[j].booknum, elem2.time);
-            }
-            int m;
-            printf("1-issue; 2-take:");
-            scanf("%d", &m);
-            if (m == 2) {
-                if (elem1.qs <= elem1.q) {
-                    fprintf(book, "%s;%s;%s;%d;%d\n", elem1.num, elem1.ath, elem1.name, elem1.q, elem1.qs + 1);
-                    fprintf(studbook, "%s;%s;\n", books[i].num, students[j].booknum);
-                }
-
-                else printf("There is nothing to take!");
-            }
-            else if (m == 1) {
-                if (elem1.qs >= 1) {
-                    fprintf(book, "%s;%s;%s;%d;%d\n", books[i].num, books[i].ath, books[i].name, books[i].q, books[i].qs);
-                    fprintf(book, "%s;%s;%s;%d;%d\n", elem1.num, elem1.ath, elem1.name, elem1.q, elem1.qs - 1);
-                    fprintf(studbook, "%s;%s;%s\n", elem1.num, elem.booknum, elem2.time);
-                }
-                else printf("There is no books\n"); 
-                printf("Book will be passed at: %s", elem2.time);
-            }
-            fclose(book);
-        }
-        else
-            printf("\nThere is no this ISBN or number of greatbook!\n ");
-    }
-    if (add == 0) {
-        exit(0);
-    }
-}
+    char login[20];
+    char password[20];
+    int student;
+    int book;
+};
+struct user user[MAX];
+//подсчет количества элементов в файлах
+void open_files();
+int Students = 0;//количество студентов
+int Books = 0;//количество книг
+int Users = 0;//количсевто юзеров
+//функции книг
+void b_add();
+void b_del();
+void b_give();
+void b_take();
+//функции студентов
+void st_add();
+void st_del();
+void st_backup();
+void st_restore();
+void st_find();
 
 int main()
 {
-    setlocale(LC_ALL, "Russian");
-    SetConsoleCP(1251);
-    SetConsoleOutputCP(1251);
-    FILE* users;
-    users = fopen("users.csv", "r+");
-    char data[100];
-    char book1[5];
-    char studs[5];
-    char login[100];
-    char passwd[100];
-    int arr = 0;
-    printf("login: ");
-    writestr(login);
-    while (fgets(data, 100, users)) {
-        char cpy[100];
-        char* temp;
-        strcpy(cpy, data);
-        temp = strtok(cpy, ";");
-        if (strcmp(login, temp) == 0) {
-            printf("password: ");
-            arr++;
-            temp = strtok(NULL, ";");
-            writestr(passwd);
-            if (strcmp(passwd, temp) != 0) {
-                printf("password is incorrect!");
-                return 0;
+    int add = 0;
+    int add_menu = 0;
+    open_files();
+
+    int user_num = 0;
+    char login[20];
+    char password[20];
+    printf("Enter login: ");
+    scanf("%s", login);
+
+    for (int st = 0; st < (Users - 1); st++)
+    {
+        if (strcmp(login, user[st].login) == 0)
+        {
+            printf("Enter password: ");
+            scanf("%s", password);
+            if ((password == user[st].password)) {
+                user_num = st; break;
             }
-            else {
-                temp = strtok(NULL, ";");
-                strcpy(book1, temp);
-                temp = strtok(NULL, ";");
-                strcpy(studs, temp);
+        }
+    }
+    
+    if ((user[user_num].student == 1) && (user[user_num].book == 1))
+    {
+        printf("<1>student menu \n");
+        printf("<2>book menu \n");
+        printf("\nYour choice: ");
+        scanf("%d", &add_menu);
+    }
+
+    if ((add_menu == 1) || ((user[user_num].student == 1) && (user[user_num].book == 0)))
+    {
+        printf("\n<1>Add_student \n");
+        printf("<2>Del_student \n");
+        printf("<3>Backup_student \n");
+        printf("<4>Restore_student \n");
+        printf("<5>Find_student \n");
+        printf("<6>Exit \n");
+        while(TRUE)
+        {
+            scanf("%d", &add);
+            if (add == 1)
+                st_add();
+            else if (add == 2)
+                st_del();
+            else if (add == 3)
+                st_backup();
+            else if (add == 4)
+                st_restore();
+            else if (add == 5)
+                st_find();
+            else if (add == 6)
                 break;
-            }
-
-
-        }
-    }if (arr == 0) {
-        printf("incorrect login\n");
-        return 0;
-    }
-
-
-    while (status != '0') {
-        system("cls");
-        if (count != 0) {
-            writestr(c);
-        }
-        if (book1[0] == '1' && studs[0] == '1') {
-            printf("Main menu:\n");
-            printf("(1) Books\n");
-            printf("(2) Students\n");
-            printf("(0) Exit\n");
-            printf(" Your turn: ");
-            status = getc(stdin);
-            while (true) {
-                if (status == '1') {
-                    system("cls");
-                    m = Mainbook();
-                    break;
-                }
-                else if (status == '2') {
-                    system("cls");
-                    m = Mainstudents();
-                    break;
-                }
-                else if (status == '0') {
-                    printf("\nGood bye!");
-                    return 0;
-
-                }
-                else {
-                    printf("\nChoose something else: ");
-                    status = getc(stdin);
-                }
-            }
-        }
-        else if (book1[0] == '1' && studs[0] != '1') {
-            m = 1;
-        }
-        else if (book1[0] != '1' && studs[0] == '1') {
-            m = 2;
-        }
-        if (count != 0) {
-            count = 0;
-            state = NULL;
-        }
-
-        while (state != '0') {
-            if (m == 1) {
-                if (count != 0 || (book1[0] != '1' || studs[0] != '1')) {
-                    Mainbook();
-                    state = getc(stdin);
-                }
-            }
-            if (m == 2) {
-                if (count != 0 || (book1[0] != '1' || studs[0] != '1')) {
-                    Mainstudents();
-                    state = getc(stdin);
-                }
-            }
+            else
+                printf("Smth is wrong!\n");
         }
     }
-}
-void delbook(const char* file)
-{
-    FILE* book;
-    char dnum[20];
-    printf("Enter ISBN:");
-    fflush(stdin);
-    scanf("%s", dnum);
-
-    book = fopen(file, "r");
-    rewind(book);
-    int getfile = similar(dnum);
-    int getfile1 = readb(file);
-    fclose(book);
-    if (getfile != -1)
+    if ((add_menu == 2) || ((user[user_num].student == 0) && (user[user_num].book == 1)))    
     {
-        book = fopen("books.csv", "w");
-        int i;
-        for (i = 0; i < getfile1; i++)
+        printf("\n<1>Add new book \n");
+        printf("<2>Delete book \n");
+        printf("<3>Give book \n");
+        printf("<4>Take book \n");
+        printf("<5>Exit \n");
+        printf("Your choice: ");
+        while(TRUE)
         {
-            if (i != getfile)
-                fprintf(book, "%s;%s;%s;%d;%d\n", books[i].num, books[i].ath, books[i].name, books[i].q, books[i].qs);
+            scanf("%d", &add);  
+            if (add == 1)
+                b_add();
+            else if (add == 2)
+                b_del();
+            else if (add == 3)
+                b_give();
+            else if (add == 4)
+                b_take();
+            else if (add == 5)
+                break;
+            else {
+                printf("Smth is wrong!\n");
+            }
         }
-        fclose(book);
+    }
 
-        printf("\nBook removed!\n");
-    }
-    else
-        printf("\nThere is no this ISBN\n");
+    return 0;
 }
-void delstudents(const char* file) {
-    FILE* studentsf;
-    char dbooknum[15];
-    printf("\nEnter number of greatbook:");
-    fflush(stdin);
-    scanf("%s", dbooknum);
-    studentsf = fopen(file, "r");
-    rewind(studentsf);
-    int getfile = similar2(dbooknum);
-    int getfile1 = readb1(file);
-    fclose(studentsf);
-    if (getfile != -1)
-    {
-        studentsf = fopen("students.csv", "w");
-        int i;
-        for (i = 0; i < getfile1; i++)
-        {
-            if (i != getfile)
-                fprintf(studentsf, "%s;%s;%s;%s;%s;%s\n", students[i].booknum, students[i].surname, students[i].name, students[i].patr, students[i].fac, students[i].depart);
-        }
-        fclose(studentsf);
-        printf("\nStudent removed!\n");
-    }
-    else
-        printf("\nThere is no this gratebook!\n");
-}
-int similar1(char num[20])
+
+void open_files()
 {
-    int i, j;
-    int temp = -1;
-    for (i = 0; i < readb("student_books.csv"); i++)
-        if (strcmp(num, books[i].num) == 0)
-            temp = i;
-    temp = i;
-    return temp;
+    FILE* file;
+    int i;
+
+    if ((file = fopen("students.csv", "r")) == 0)
+    {
+        printf("Can't open students.csv!");
+        exit(300);
+    }
+    for (i = 0; !feof(file); i++)
+    {
+        fscanf(file, "%[^;]%*c", student[i].gradebook);
+        fscanf(file, "%[^;]%*c", student[i].lastname);
+        fscanf(file, "%[^;]%*c", student[i].name);
+        fscanf(file, "%[^;]%*c", student[i].f_name);
+        fscanf(file, "%[^;]%*c", student[i].facult);
+        fscanf(file, "%[^'\n']%*c", student[i].departr);
+    }
+    fclose(file);
+    Students = i;
+
+    if ((file = fopen("books.csv", "r")) == 0)
+    {
+        printf("Can't open books.csv");
+        exit(100);
+    }
+    for (i = 0; !feof(file); i++)
+    {
+        fscanf(file, "%lld", &books[i].ISBN);
+        getc(file);
+        fscanf(file, "%[^;]%*c", books[i].Author);
+        fscanf(file, "%[^;]%*c", books[i].title);
+        fscanf(file, "%d", &books[i].total);
+        getc(file);
+        fscanf(file, "%d", &books[i].available);
+        getc(file);
+    }
+    fclose(file);
+    Books = i;
+
+    if ((file = fopen("users.csv", "r")) == 0)
+    {
+        printf("Can't open users.csv!");
+        exit(1);
+    }
+    for (i = 0; !feof(file); i++)
+    {
+        fscanf(file, "%[^;]%*c", user[i].login);
+        fscanf(file, "%[^;]%*c", user[i].password);
+        fscanf(file, "%d", &user[i].student);
+        getc(file);
+        fscanf(file, "%d", &user[i].book);
+        getc(file);
+    }
+    fclose(file);
+    Users = i;
+}
+
+
+void b_add()
+{
+    open_files();
+
+    unsigned long long int ISBN;
+    char author[size];
+    char booktitle[size];
+    int total;
+    int available;
+
+    FILE* file;
+    if ((file = fopen("books.csv", "a")) == 0)
+    {
+        printf("Can't open books.csv!");
+        exit(1);
+    }
+
+    printf("ISBN: ");
+    scanf("%lld", &ISBN);
+
+    for (int i = 0; i < Books; i++)
+    {
+        if (ISBN == books[i].ISBN)
+        {
+            printf("This book already exists\n");
+            exit(100);
+        }
+    }
+
+    printf("Author: ");
+    scanf("%s", author);
+    printf("Title: ");
+
+    char c = getchar();
+    int n = 0;
+
+    while ((c = getchar()) != '\n')
+    {
+        booktitle[n] = c;
+        n++;
+    }
+    booktitle[n] = '\0';
+
+    printf("Number of books: ");
+    scanf("%d", &total);
+
+    printf("Available: ");
+    scanf("%d", &available);
+
+    fprintf(file, "\n%lld;", ISBN);
+    fprintf(file, "%s;", author);
+    fprintf(file, "%s;", booktitle);
+    fprintf(file, "%d;", total);
+    fprintf(file, "%d", available);
+
+    fclose(file);
+    printf("\nAdded\n");
+
+}
+
+void b_del()
+{
+    open_files();
+    unsigned long long int ISBN;
+
+    FILE* file;
+    if ((file = fopen("books.csv", "r")) == 0)
+    {
+        printf("Can't open books.csv");
+        exit(1);
+    }
+
+    char* buf = (char*)malloc((Books + 1) * (sizeof(struct books)));
+
+    printf("ISBN: ");
+    scanf("%lld", &ISBN);
+
+    int n = 0;
+    for (int i = 0; i < Books; i++)
+    {
+        if (ISBN != books[i].ISBN)
+        {
+            buf[n] = getc(file);
+            for (; (buf[n] != '\n') && (!feof(file));)
+            {
+                n++;
+                buf[n] = getc(file);
+            }
+            buf[n] = '\n';
+            n++;
+        }
+        if (ISBN == books[i].ISBN)
+        {
+            for (; (getc(file) != '\n') && (!feof(file));){ }
+        }
+    }
+    buf[n - 1] = '\0';
+    fclose(file);
+
+    file = fopen("books.csv", "w");
+    for (int e = 0; buf[e] != '\0'; e++)
+        fprintf(file, "%c", buf[e]);
+    fclose(file);
+    free(buf);
+    printf("Removed!\n");
+}
+
+
+void b_give()
+{
+    open_files();
+
+    unsigned long long int ISBN;
+
+    FILE* file;
+    if ((file = fopen("books.csv", "r")) == 0)
+    {
+        printf("Can't open books.csv!");
+        exit(103);
+    }
+
+    printf("ISBN: ");
+    scanf("%lld", &ISBN);
+
+    int fl = 0;
+    int i;
+    for (i = 0; i < Books; i++)
+    {
+        if ((ISBN == books[i].ISBN) && (books[i].available > 0))
+        {
+            books[i].available = books[i].available - 1;
+            fl = 1;
+        }
+    }
+    fclose(file);
+
+    if (fl == 1)
+    {
+        file = fopen("books.csv", "w");
+        for (int c = 0; c < Books; c++)
+        {
+            fprintf(file, "%lld;", books[c].ISBN);
+            fprintf(file, "%s;", books[c].Author);
+            fprintf(file, "%s;", books[c].title);
+            fprintf(file, "%d;", books[c].total);
+            if (c == (Books - 1))
+                fprintf(file, "%d", books[c].available);
+            else
+                fprintf(file, "%d\n", books[c].available);
+        }
+        printf("OK\n");
+        fclose(file);
+    }
+    else printf("Smth is wrong!\n");
+}
+
+void b_take()
+{
+    open_files();
+
+    unsigned long long int ISBN;
+
+    FILE* file;
+    if ((file = fopen("books.csv", "r")) == 0)
+    {
+        printf("Can't open books.csv!");
+        exit(104);
+    }
+
+    printf("ISBN: ");
+    scanf("%lld", &ISBN);
+
+    int t = 0;
+    int i = 0;
+    for (i; i < Books; i++)
+    {
+        if ((ISBN == books[i].ISBN) && (books[i].available < books[i].total))
+        {
+            books[i].available = books[i].available + 1;
+            t = 1;
+        }
+    }
+    fclose(file);
+
+    if (t == 1)
+    {
+        file = fopen("books.csv", "w");
+        for (int c = 0; c < Books; c++)
+        {
+            fprintf(file, "%lld;", books[c].ISBN);
+            fprintf(file, "%s;", books[c].Author);
+            fprintf(file, "%s;", books[c].title);
+            fprintf(file, "%d;", books[c].total);
+            if (c == (Books - 1))
+                fprintf(file, "%d", books[c].available);
+            else
+                fprintf(file, "%d\n", books[c].available);
+        }
+        printf("OK\n");
+        fclose(file);
+    }
+    else printf("Smth is wrong!");
+}
+
+void st_add()
+{
+    open_files();
+
+    char zachet_book[8];
+    char name[15];
+    char lastname[15];
+    char f_name[20];
+    char faculty[5];
+    char prof[size];
+
+    FILE* file;
+    if ((file = fopen("students.csv", "a")) == 0)
+    {
+        printf("Can't open students.csv!");
+        exit(301);
+    }
+    printf("Number of gradebook: ");
+    scanf("%s", zachet_book);
+
+    for (int n = 0; n <= Students; n++)
+    {
+        if (strcmp(zachet_book, student[n].gradebook) == 0)
+        {
+            printf("You can't add this student!");
+            exit(400);
+        }
+    }
+
+    printf("Lastname: ");
+    scanf("%s", lastname);
+
+    printf("Name: ");
+    scanf("%s", name);
+
+    printf("Fathername: ");
+    scanf("%s", f_name);
+
+    printf("Faculty: ");
+    scanf("%s", faculty);
+
+    printf("Department: ");
+    int n = 0;
+    char c = getchar();
+    while ((c = getchar()) != '\n')
+    {
+        prof[n] = c; n++;
+    }
+    prof[n] = '\0';
+
+    fprintf(file, "\n%s;", zachet_book);
+    fprintf(file, "%s;", lastname);
+    fprintf(file, "%s;", name);
+    fprintf(file, "%s;", f_name);
+    fprintf(file, "%s;", faculty);
+    fprintf(file, "%s", prof);
+
+    fclose(file);
+
+    printf("OK\n");
+}
+
+
+
+void st_del()
+{
+    open_files();
+
+    char gradebook[8];
+
+    FILE* file;
+    if ((file = fopen("students.csv", "r")) == 0)
+    {
+        printf("Can't open students.csv");
+        exit(302);
+    }
+    printf("Number of greatbook: ");
+
+    scanf("%s", gradebook);
+
+    char* buf = (char*)malloc((Students + 1) * (sizeof(struct student)));
+    int n = 0;
+
+    for (int i = 0; i < Students; i++)
+    {
+        if (strcmp(gradebook, student[i].gradebook) != 0)
+        {
+            buf[n] = getc(file);
+            while ((buf[n] != '\n') && (!feof(file)))
+            {
+                n++;
+                buf[n] = getc(file);
+            }
+            buf[n] = '\n';
+            n++;
+        }
+        if (strcmp(gradebook, student[i].gradebook) == 0)
+        {
+            while ((getc(file) != '\n') && (!feof(file))){}
+        }
+    }
+    buf[n - 1] = '\0';
+    fclose(file);
+
+    file = fopen("students.csv", "w");
+
+    for (int e = 0; buf[e] != '\0'; e++)
+        fprintf(file, "%c", buf[e]);
+
+    fclose(file);
+    free(buf);
+
+    printf("OK!\n");
+}
+
+void st_backup()
+{
+    open_files();
+
+    int n;
+    FILE* file;
+    if ((file = fopen("students.csv", "r")) == 0)
+    {
+        printf("Can't open students.csv!");
+        exit(303);
+    }
+    char* buf = (char*)malloc((Students + 1) * (sizeof(struct student)));
+
+    for (n = 0; !feof(file); n++)
+    {
+        buf[n] = getc(file);
+    }
+    buf[n - 1] = '\0';
+
+    fclose(file);
+
+    struct tm* u;
+    const time_t timer = time(NULL);
+    u = localtime(&timer);
+
+    char array[50];
+
+    for (int i = 0; i < 50; i++)
+        array[i] = 0;
+
+    int len = strftime(array, 50, "%d.%m.%Y %H-%M", u);
+
+    char f_title[32] = "students";
+    int r = 8;
+    int i = 0;
+    for (r; array[i] != '\0'; i++, r++)
+    {
+        f_title[r] = array[i];
+    }
+    f_title[r] = '.';
+    f_title[r + 1] = 'c';
+    f_title[r + 2] = 's';
+    f_title[r + 3] = 'v';
+    f_title[r + 4] = '\0';
+
+    file = fopen(f_title, "w");
+
+    for (int e = 0; (buf[e] != '\0'); e++)
+        fprintf(file, "%c", buf[e]);
+
+    fclose(file);
+    free(buf);
+
+    printf("Bacup %s created.\n", f_title);
+}
+
+void st_restore()
+{
+
+    char backup_name[100];
+    int bu = 0;
+
+    printf("\nName of backup(studentsXX.XX.XXXX TT-TT.csv): ");
+
+    char c = getchar();
+    c = getchar();
+    while (c != '\n')
+    {
+        backup_name[bu] = c;
+        bu++;
+        c = getchar();
+    }
+    backup_name[bu] = '\0';
+
+    FILE* file;
+    if ((file = fopen(backup_name, "r")) == 0)
+    {
+        printf("Can't open students.csv!");
+        exit(304);
+    }
+
+    char* buf = (char*)malloc((Students + 1) * (sizeof(struct student)));
+    int n = 0;
+
+    for (n; !feof(file); n++)
+    {
+        buf[n] = getc(file);
+    }
+    buf[n - 1] = '\0';
+
+    fclose(file);
+
+    file = fopen("students.csv", "w");
+    for (int e = 0; (buf[e] != '\0'); e++)
+        fprintf(file, "%c", buf[e]);
+
+    fclose(file);
+    free(buf);
+
+    printf("File students.csv restored!\n");
+}
+
+void st_find()
+{
+    open_files();
+
+    char lastname[15];
+
+    printf("Lastname: ");
+    scanf("%s", lastname);
+    int t = 0;
+
+    for (int i = 0; i < Students; i++)
+    {
+        if (strcmp(lastname, student[i].lastname) == 0)
+        {
+            t = 1;
+            printf("Greatbook: %s \t ", student[i].gradebook);
+            printf("Lastname: %s \t", student[i].lastname);
+            printf("Name: %s \t", student[i].name);
+            printf("Fathername: %s \t", student[i].f_name);
+            printf("Faculty: %s\t", student[i].facult);
+            printf("Department: %s\n", student[i].departr);
+        }
+    }
+    if (t == 0)
+        printf("There is no this student!\n");
 }
